@@ -1,0 +1,117 @@
+#!/bin/bash
+# Musicrename es un script para renombrar archivos de música
+# Uso: musicrename
+# Autor original: Meta IA
+# Modificado por: Nil
+# Version 1.3
+# Fecha: 05-May-25
+# Cambios:
+# - Se reemplazó mediainfo por ffprobe
+# - Se agregó un bucle para renombrar archivos				        	
+# Version 1.4
+# - Se agregó un bucle para renombrar ficheros lrc
+#   para que coincidan con los números de los mp3
+# Version 1.5
+# - Se agregó una comprobación adicional de advertencia
+#   en el caso no coincidan los nombres .mp3 y .lrc o de 
+#   éxito C:
+# Version 1.6
+# - Se agregó información detallada que cuenta los ficheros
+#   de música renombrados en caso de éxito C:
+# Version 1.7
+# - Se agregó línea y se modificó renombrar mp3 y lrc para coincidencia
+# Version 1.8
+#   Se cambió el orden de las secciones: 
+#   1.Renombrar mp3 y lrc, 
+#   2. agregar número de pista a cada archivo mp3
+#   3. renombrar archivos lrc
+# Version 1.9
+# - Reordenación de del Script
+#   1. Renombrar mp3 y lrc
+#   2. Agregar núm. pistas a cada mp3
+#   3. Renombrar lrc para coincidir con nombres de los mp3 
+#   4. Comprobación de archivos
+# Version 1.10
+# - Se agregó nuevo bucle en la sección 3. de la versión 1.9  
+# Verson 1.11
+# - Se editó la expresión regular sed en sección 3. eliminando //* y solo dejando //
+# Version 1.12
+# - Se eliminó el comando sed en la sección 3 y se agregó el comando cut
+# Version 1.13
+# - Se actualizó código de la sección 3
+# Version 1.14
+# - Se actualizó código sección 3
+# Version 1.15
+# - Se agregó el srcipt como parte del sistema en /usr/local/bin y se agregó nuevo
+#   nombre de uso, además se agregó otra opción para ver la version actual
+# Version 1.16
+# - Se agregó un código para detener el script si no hay archivos y muestra la ruta
+# Version 1.17
+# - Se agregó nuevo código para buscar ficheros mp3 y lrc y detener si no encuentra
+######################################################################################
+
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  echo "Uso: musicrename"
+  echo "musicrename sin argumentos, corre el script en el directorio actual"
+  echo "musicrename -h o --help imprime ayuda para usar el script"
+  echo "musicrenam -v o --version imprime versión del script"
+  echo "Renombra archivos de música en el directorio actual, quitando el nombre del álbum y agregando el número de pista."
+  echo "No requiere opciones adicionales. Enjoy! (:"
+  exit 0
+fi
+
+if [ "$1" == "-v" ] || [ "$1" == "--version" ]; then
+	echo "musicrename (Script) 1.17" 
+	echo "Licencia GPLv3+: GNU GPL version 3 or later"
+	echo "Este es un software libre siéntete libre de cambiar y compartir C:"
+	echo "Escrito por Meta IA y Nil."
+	exit 0;
+fi
+
+echo "Comprobando archivos..."
+if [ -z "$(ls *.mp3 *.lrc 2>/dev/null)"  ]; then
+    echo "";
+    echo "Advertencia: No se encontraron archivos .mp3 y .lrc"
+    echo ""
+    echo -n "Directorio actual... "; pwd
+    echo ""
+    exit 0;
+fi
+
+# Renombrar archivos mp3 y lrc quitando el nombre del álbum y el guión
+for file in *.mp3 *.lrc; do
+  new_name=$(echo "$file" | awk -F ' - ' '{print $2}')
+  mv "$file" "$new_name"
+done
+
+
+# Agregar número de pista a cada archivo mp3
+i=1
+for file in *.mp3; do
+  track_number=$(ffprobe -v error -show_entries format_tags=track -of default=noprint_wrappers=1:nokey=1 "$file" | cut -d '/' -f 1)
+  new_name=$(printf "%02d_%s" "$track_number" "$file")
+  mv "$file" "$new_name"
+  ((i++))
+done
+
+# Renombrar archivos lrc para que coincidan con los mp3
+for file in *.mp3; do
+  lrc_name="${file%.mp3}.lrc"
+  base_name=$(basename "$file" | cut -d '_' -f 2- | cut -d '.' -f 1)
+  for lrc in *.lrc; do
+    if [ "${lrc%.*}" = "${base_name}" ]; then
+      mv "$lrc" "$lrc_name"
+    fi
+  done
+done
+
+echo "Comprobando archivos..."
+for file in *.mp3; do
+  lrc_file="${file%.mp3}.lrc"
+  if [ ! -f "$lrc_file" ]; then
+    echo "Advertencia: No se encontró archivo .lrc para $file"
+  fi
+done
+
+echo "¡Listo! Archivos renombrados correctamente. Se han procesado $(ls *.mp3 | wc -l) archivos de música."
