@@ -6,45 +6,6 @@
 # Version 1.3
 # Fecha: 05-May-25
 # Cambios:
-# - Se reemplazó mediainfo por ffprobe
-# - Se agregó un bucle para renombrar archivos				        	
-# Version 1.4
-# - Se agregó un bucle para renombrar ficheros lrc
-#   para que coincidan con los números de los mp3
-# Version 1.5
-# - Se agregó una comprobación adicional de advertencia
-#   en el caso no coincidan los nombres .mp3 y .lrc o de 
-#   éxito C:
-# Version 1.6
-# - Se agregó información detallada que cuenta los ficheros
-#   de música renombrados en caso de éxito C:
-# Version 1.7
-# - Se agregó línea y se modificó renombrar mp3 y lrc para coincidencia
-# Version 1.8
-#   Se cambió el orden de las secciones: 
-#   1.Renombrar mp3 y lrc, 
-#   2. agregar número de pista a cada archivo mp3
-#   3. renombrar archivos lrc
-# Version 1.9
-# - Reordenación de del Script
-#   1. Renombrar mp3 y lrc
-#   2. Agregar núm. pistas a cada mp3
-#   3. Renombrar lrc para coincidir con nombres de los mp3 
-#   4. Comprobación de archivos
-# Version 1.10
-# - Se agregó nuevo bucle en la sección 3. de la versión 1.9  
-# Verson 1.11
-# - Se editó la expresión regular sed en sección 3. eliminando //* y solo dejando //
-# Version 1.12
-# - Se eliminó el comando sed en la sección 3 y se agregó el comando cut
-# Version 1.13
-# - Se actualizó código de la sección 3
-# Version 1.14
-# - Se actualizó código sección 3
-# Version 1.15
-# - Se agregó el srcipt como parte del sistema en /usr/local/bin y se agregó nuevo
-#   nombre de uso, además se agregó otra opción para ver la version actual
-# Version 1.16
 # - Se agregó un código para detener el script si no hay archivos y muestra la ruta
 # Version 1.17
 # - Se agregó nuevo código para buscar ficheros mp3 y lrc y detener si no encuentra
