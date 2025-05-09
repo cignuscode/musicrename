@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Comprobación de ffprobe
+if ! command -v ffprobe &> /dev/null; then
+  echo "Error: ffprobe no está instalado. Por favor, instale FFmpeg y vuelva a intentarlo."
+  exit 1
+fi
+
 # Musicrename es un script para renombrar archivos de música
 # Uso: musicrename [opciones] [directorio]
 # Autor original: Meta IA
@@ -13,6 +19,7 @@ VERSION=0
 SIMULAR=0
 DIRECTORIO="."
 
+# Procesar opciones de línea de comandos
 while [ $# -gt 0 ]; do
   case $1 in
     -h|--help)
@@ -60,7 +67,11 @@ if [ ! -d "$DIRECTORIO" ]; then
   exit 1
 fi
 
-cd "$DIRECTORIO" || exit 1
+# Cambiar al directorio de trabajo
+if ! cd "$DIRECTORIO"; then
+  echo "Error: No se pudo cambiar al directorio '$DIRECTORIO'"
+  exit 1
+fi
 
 # Comprobar archivos
 echo "Comprobando archivos..."
@@ -75,28 +86,44 @@ if [ -z "$(ls *.mp3 *.lrc 2>/dev/null)" ]; then
 fi
 
 # Renombrar archivos mp3 y lrc quitando el nombre del álbum y el guión
+echo "Renombrando archivos..."
 for file in *.mp3 *.lrc; do
+  # Extraer el nombre del archivo sin el prefijo
   new_name=$(echo "$file" | awk -F ' - ' '{print $2}')
+  if [ -z "$new_name" ]; then
+    echo "Advertencia: No se pudo renombrar '$file'"
+    continue
+  fi
+  
+  # Renombrar archivo
   if [ $SIMULAR -eq 1 ]; then
     echo "mv '$file' '$new_name'"
   else
-    mv "$file" "$new_name"
+    if ! mv "$file" "$new_name"; then
+      echo "Error: No se pudo renombrar '$file' a '$new_name'"
+    fi
   fi
 done
 
 # Agregar número de pista a cada archivo mp3 y lrc
+echo "Agregando número de pista..."
 i=1
 for file in *.mp3; do
+  # Extraer el número de pista del archivo
   track_number=$(ffprobe -v error -show_entries format_tags=track -of default=noprint_wrappers=1:nokey=1 "$file" | cut -d '/' -f 1)
   if [ -z "$track_number" ]; then
     echo "Advertencia: No se encontró metadato de pista para '$file'"
     track_number=$i
   fi
+  
+  # Renombrar archivo
   new_name=$(printf "%02d_%s" "$track_number" "$file")
   if [ $SIMULAR -eq 1 ]; then
     echo "mv '$file' '$new_name'"
   else
-    mv "$file" "$new_name"
+    if ! mv "$file" "$new_name"; then
+      echo "Error: No se pudo renombrar '$file' a '$new_name'"
+    fi
   fi
   
   # Renombrar archivo lrc correspondiente
@@ -106,7 +133,9 @@ for file in *.mp3; do
     if [ $SIMULAR -eq 1 ]; then
       echo "mv '$lrc_file' '$new_lrc_name'"
     else
-      mv "$lrc_file" "$new_lrc_name"
+      if ! mv "$lrc_file" "$new_lrc_name"; then
+        echo "Error: No se pudo renombrar '$lrc_file' a '$new_lrc_name'"
+      fi
     fi
   fi
   
@@ -114,7 +143,7 @@ for file in *.mp3; do
 done
 
 # Comprobar archivos lrc
-echo "Comprobando archivos..."
+echo "Comprobando archivos lrc..."
 for file in *.mp3; do
   lrc_file="${file%.mp3}.lrc"
   if [ ! -f "$lrc_file" ]; then
