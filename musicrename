@@ -1,71 +1,119 @@
 #!/bin/bash
+
 # Musicrename es un script para renombrar archivos de música
-# Uso: musicrename
+# Uso: musicrename [opciones] [directorio]
 # Autor original: Meta IA
 # Modificado por: Nil
-# Version 1.3
-# Fecha: 05-May-25
-# Cambios:
-# Version 1.17
-# - Se agregó nuevo código para buscar ficheros mp3 y lrc y detener si no encuentra
-######################################################################################
+# Version 1.4
+# Fecha: 09-May-25
 
+# Opciones
+HELP=0
+VERSION=0
+SIMULAR=0
+DIRECTORIO="."
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-  echo "Uso: musicrename"
-  echo "musicrename sin argumentos, corre el script en el directorio actual"
-  echo "musicrename -h o --help imprime ayuda para usar el script"
-  echo "musicrenam -v o --version imprime versión del script"
-  echo "Renombra archivos de música en el directorio actual, quitando el nombre del álbum y agregando el número de pista."
-  echo "No requiere opciones adicionales. Enjoy! (:"
+while [ $# -gt 0 ]; do
+  case $1 in
+    -h|--help)
+      HELP=1
+      shift
+      ;;
+    -v|--version)
+      VERSION=1
+      shift
+      ;;
+    -s|--simular)
+      SIMULAR=1
+      shift
+      ;;
+    *)
+      DIRECTORIO="$1"
+      shift
+      ;;
+  esac
+done
+
+# Mostrar ayuda
+if [ $HELP -eq 1 ]; then
+  echo "Uso: musicrename [opciones] [directorio]"
+  echo "Opciones:"
+  echo "  -h, --help     Mostrar esta ayuda"
+  echo "  -v, --version  Mostrar versión del script"
+  echo "  -s, --simular  Simular el renombrado sin aplicar cambios"
+  echo "  directorio     Directorio de trabajo (por defecto: actual)"
   exit 0
 fi
 
-if [ "$1" == "-v" ] || [ "$1" == "--version" ]; then
-	echo "musicrename (Script) 1.17" 
-	echo "Licencia GPLv3+: GNU GPL version 3 or later"
-	echo "Este es un software libre siéntete libre de cambiar y compartir C:"
-	echo "Escrito por Meta IA y Nil."
-	exit 0;
+# Mostrar versión
+if [ $VERSION -eq 1 ]; then
+  echo "musicrename (Script) 1.4"
+  echo "Licencia GPLv3+: GNU GPL version 3 or later"
+  echo "Este es un software libre siéntete libre de cambiar y compartir C:"
+  echo "Escrito por Meta IA y Nil."
+  exit 0
 fi
 
+# Comprobar directorio
+if [ ! -d "$DIRECTORIO" ]; then
+  echo "Error: Directorio '$DIRECTORIO' no existe"
+  exit 1
+fi
+
+cd "$DIRECTORIO" || exit 1
+
+# Comprobar archivos
 echo "Comprobando archivos..."
-if [ -z "$(ls *.mp3 *.lrc 2>/dev/null)"  ]; then
-    echo "";
-    echo "Advertencia: No se encontraron archivos .mp3 y .lrc"
-    echo ""
-    echo -n "Directorio actual... "; pwd
-    echo ""
-    exit 0;
+if [ -z "$(ls *.mp3 *.lrc 2>/dev/null)" ]; then
+  echo ""
+  echo "Advertencia: No se encontraron archivos .mp3 y .lrc"
+  echo ""
+  echo -n "Directorio actual... "
+  pwd
+  echo ""
+  exit 0
 fi
 
 # Renombrar archivos mp3 y lrc quitando el nombre del álbum y el guión
 for file in *.mp3 *.lrc; do
   new_name=$(echo "$file" | awk -F ' - ' '{print $2}')
-  mv "$file" "$new_name"
+  if [ $SIMULAR -eq 1 ]; then
+    echo "mv '$file' '$new_name'"
+  else
+    mv "$file" "$new_name"
+  fi
 done
 
-
-# Agregar número de pista a cada archivo mp3
+# Agregar número de pista a cada archivo mp3 y lrc
 i=1
 for file in *.mp3; do
   track_number=$(ffprobe -v error -show_entries format_tags=track -of default=noprint_wrappers=1:nokey=1 "$file" | cut -d '/' -f 1)
+  if [ -z "$track_number" ]; then
+    echo "Advertencia: No se encontró metadato de pista para '$file'"
+    track_number=$i
+  fi
   new_name=$(printf "%02d_%s" "$track_number" "$file")
-  mv "$file" "$new_name"
+  if [ $SIMULAR -eq 1 ]; then
+    echo "mv '$file' '$new_name'"
+  else
+    mv "$file" "$new_name"
+  fi
+  
+  # Renombrar archivo lrc correspondiente
+  lrc_file="${file%.mp3}.lrc"
+  if [ -f "$lrc_file" ]; then
+    new_lrc_name=$(printf "%02d_%s" "$track_number" "$lrc_file")
+    if [ $SIMULAR -eq 1 ]; then
+      echo "mv '$lrc_file' '$new_lrc_name'"
+    else
+      mv "$lrc_file" "$new_lrc_name"
+    fi
+  fi
+  
   ((i++))
 done
 
-# Renombrar archivos lrc para que coincidan con los mp3
-for file in *.mp3; do
-  lrc_name="${file%.mp3}.lrc"
-  base_name=$(basename "$file" | cut -d '_' -f 2- | cut -d '.' -f 1)
-  for lrc in *.lrc; do
-    if [ "${lrc%.*}" = "${base_name}" ]; then
-      mv "$lrc" "$lrc_name"
-    fi
-  done
-done
-
+# Comprobar archivos lrc
 echo "Comprobando archivos..."
 for file in *.mp3; do
   lrc_file="${file%.mp3}.lrc"
@@ -74,4 +122,9 @@ for file in *.mp3; do
   fi
 done
 
-echo "¡Listo! Archivos renombrados correctamente. Se han procesado $(ls *.mp3 | wc -l) archivos de música."
+# Mensaje final
+if [ $SIMULAR -eq 1 ]; then
+  echo "Simulación completada. No se aplicaron cambios."
+else
+  echo "¡Listo! Archivos renombrados correctamente. Se han procesado $(ls *.mp3 | wc -l) archivos de música."
+fi
