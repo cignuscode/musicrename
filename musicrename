@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# MusicRename: Un script para renombrar archivos de música
+# Copyright (C) 2023 CignusCode y Meta AI (colaboración y desarrollo conjunto)
+#
+# Este programa es software libre: puedes redistribuirlo y/o modificarlo
+# bajo los términos de la Licencia Pública General de GNU (GPL) versión 3 o posterior.
+#
+# Este programa se distribuye con la esperanza de que sea útil, pero SIN NINGUNA GARANTÍA;
+# sin siquiera la garantía implícita de COMERCIALIZACIÓN o IDONEIDAD PARA UN PROPÓSITO PARTICULAR.
+# Consulte la Licencia Pública General de GNU para obtener más detalles.
+
 # Comprobación de ffprobe
 if ! command -v ffprobe &> /dev/null; then
   echo "Error: ffprobe no está instalado. Por favor, instale FFmpeg y vuelva a intentarlo."
@@ -8,8 +18,7 @@ fi
 
 # Musicrename es un script para renombrar archivos de música
 # Uso: musicrename [opciones] [directorio]
-# Autor original: Meta IA
-# Modificado por: Nil
+# Desarrollado por CignusCode y Meta AI (colaboración y desarrollo conjunto)
 # Version 1.4
 # Fecha: 09-May-25
 
@@ -56,8 +65,8 @@ fi
 if [ $VERSION -eq 1 ]; then
   echo "musicrename (Script) 1.4"
   echo "Licencia GPLv3+: GNU GPL version 3 or later"
-  echo "Este es un software libre siéntete libre de cambiar y compartir C:"
-  echo "Escrito por Meta IA y Nil."
+  echo "Este es un software libre, siéntete libre de cambiar y compartir."
+  echo "Desarrollado por CignusCode y Meta AI (colaboración y desarrollo conjunto)."
   exit 0
 fi
 
