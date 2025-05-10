@@ -1,3 +1,6 @@
+
+ MusicRename Copyright (C) 2023  CignusCode y Meta AI (colaboración y desarrollo conjunto)
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -611,7 +614,7 @@ If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 Código
 
-<program>  Copyright (C) <year>  <name of author>
+MusicRename Copyright (C) 2023  CignusCode y Meta AI (colaboración y desarrollo conjunto)
 
 This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
 This is free software, and you are welcome to redistribute it
