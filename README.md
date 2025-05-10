@@ -41,6 +41,5 @@ MusicRename es un script en Bash para renombrar archivos de música de manera au
 ## Licencia
 
 Este proyecto está licenciado bajo la licencia GPLv3. Ver el archivo LICENSE para más detalles.
-Puedes agregar esta sección al final de tu README.md. Si necesitas ayuda para crear el archivo LICENSE, puedo proporcionarte el texto de la licencia GPLv3.
 
 
