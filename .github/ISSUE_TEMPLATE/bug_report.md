@@ -1,23 +1,28 @@
-# Informe de error
+---
+name: Bug report
+about: Crear un informe de error para ayudarnos a mejorar MusicRename
+title: "[BUG] Error en MusicRename"
+labels: bug, documentación, error, mejora, MusicRename
+assignees: ''
 
-## Descripción del error
+---
 
-* Describe el error que estás experimentando
+**Describe el error**
+Una descripción clara y concisa del error.
 
-## Pasos para reproducir el error
+**Pasos para reproducir el error**
+1. Ejecutar el comando `musicrename [opciones] [directorio]`
+2. [Paso 2]
+3. [Paso 3]
+4. [Resultado/error]
 
-1. Paso 1
-2. Paso 2
-3. Paso 3
+**Comportamiento esperado**
+Una descripción clara y concisa de lo que se esperaba que sucediera.
 
-## Resultado esperado
+**Entorno**
+* Sistema operativo: [e.g. Linux, macOS]
+* Versión de Bash: [e.g. 5.0]
+* Versión de MusicRename: [e.g. 1.4]
 
-* Describe lo que esperabas que sucediera
-
-## Resultado actual
-
-* Describe lo que sucedió en realidad
-
-## Información adicional
-
-* Cualquier información adicional que pueda ser relevante para resolver el error
+**Información adicional**
+Cualquier otra información relevante sobre el problema.

@@ -1,3 +1,12 @@
+---
+name: Feature request
+about: Proponer una nueva característica o funcionalidad para MusicRename
+title: Mejorar la funcionalidad de renombrado de archivos de música en MusicRename
+labels: enhancement, feature, MusicRename
+assignees: ''
+
+---
+
 # Solicitud de característica
 
 ## Descripción de la característica
