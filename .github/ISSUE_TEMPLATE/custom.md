@@ -3,7 +3,7 @@ name: Custom issue template
 about: Este template se utiliza para reportar issues personalizados relacionados con
   MusicRename que no se ajustan a las categorías estándar.
 title: "[Solicitud personalizada] - Describa brevemente el issue"
-labels: ''
+labels: issue, mejora, nueva funcionalidad, personalizado, solicitud
 assignees: ''
 
 ---
